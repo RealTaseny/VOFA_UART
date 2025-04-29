@@ -5,13 +5,13 @@
 
 /*VOFA type structure*/
 vofaJustFloatFrame JustFloat_Data;
-vofaCommand        cmd;
+vofaCommand        vofaCommandData;
 
 void vofaJustFloatInit(void)
 {
-	cmd.cmdID                   = INVALID;
-	cmd.cmdType                 = INVALID;
-	cmd.completionFlag          = 0;
+	vofaCommandData.cmdID                   = INVALID;
+	vofaCommandData.cmdType                 = INVALID;
+	vofaCommandData.completionFlag          = 0;
 	JustFloat_Data.frametail[0] = 0x00;
 	JustFloat_Data.frametail[1] = 0x00;
 	JustFloat_Data.frametail[2] = 0x80;
@@ -21,7 +21,7 @@ void vofaJustFloatInit(void)
 void vofaSendJustFloat(float* chData)
 {
 	uint8_t u8Array[4];
-	float2uint8_tArray(u8Array, chData, 1);
+	float2uint8Array(u8Array, chData, 0);
 	uartSendData(u8Array, sizeof(u8Array));
 }
 
@@ -42,19 +42,19 @@ void vofaSendRawdata(uint8_t Data)
 
 void uartCMDRecv(uint8_t byte_data) //此函数放在串口中断中
 {
-	cmd.uartRxPacket[vofaRxBufferIndex] = byte_data;
+	vofaCommandData.uartRxPacket[vofaRxBufferIndex] = byte_data;
 
-	if (cmd.uartRxPacket[vofaRxBufferIndex - 1] == '!' && cmd.uartRxPacket[vofaRxBufferIndex] == '#')
+	if (vofaCommandData.uartRxPacket[vofaRxBufferIndex - 1] == '!' && vofaCommandData.uartRxPacket[vofaRxBufferIndex] == '#')
 	{
-		cmd.completionFlag = 1;
+		vofaCommandData.completionFlag = 1;
 		vofaRxBufferIndex  = 0;
 	}
 
 	else if (vofaRxBufferIndex > (CMD_FRAME_SIZE - 1))
 	{
-		cmd.completionFlag = 0;
+		vofaCommandData.completionFlag = 0;
 		vofaRxBufferIndex  = 0;
-		memset(cmd.uartRxPacket, 0, 10);
+		memset(vofaCommandData.uartRxPacket, 0, 10);
 	}
 
 	else
@@ -63,44 +63,45 @@ void uartCMDRecv(uint8_t byte_data) //此函数放在串口中断中
 	}
 }
 
+//@S/P1/2/3=%%!#
 void vofaCommandParse(void)
 {
 	uint8_t* pRxPacket;
-	pRxPacket = cmd.uartRxPacket;
+	pRxPacket = vofaCommandData.uartRxPacket;
 
-	if (cmd.uartRxPacket[0] != '@' || cmd.uartRxPacket[3] != '=' || cmd.uartRxPacket[CMD_FRAME_SIZE - 2] != '!' || cmd.
+	if (vofaCommandData.uartRxPacket[0] != '@' || vofaCommandData.uartRxPacket[3] != '=' || vofaCommandData.uartRxPacket[CMD_FRAME_SIZE - 2] != '!' || vofaCommandData.
 		uartRxPacket[CMD_FRAME_SIZE - 1] != '#')
 	{
-		memset(cmd.uartRxPacket, 0, CMD_FRAME_SIZE);
+		memset(vofaCommandData.uartRxPacket, 0, CMD_FRAME_SIZE);
 		return;
 	}
 
-	switch (cmd.uartRxPacket[1])
+	switch (vofaCommandData.uartRxPacket[1])
 	{
-		case 'S': cmd.cmdType = Speed;
+		case 'S': vofaCommandData.cmdType = Speed;
 			break;
-		case 'P': cmd.cmdType = Position;
+		case 'P': vofaCommandData.cmdType = Position;
 			break;
-		default: cmd.cmdType = INVALID;
+		default: vofaCommandData.cmdType = INVALID;
 			break;
 	}
 
-	switch (cmd.uartRxPacket[2])
+	switch (vofaCommandData.uartRxPacket[2])
 	{
-		case '1': cmd.cmdID = Direct_Assignment;
+		case '1': vofaCommandData.cmdID = Direct_Assignment;
 			break;
-		case '2': cmd.cmdID = Increase;
+		case '2': vofaCommandData.cmdID = Increase;
 			break;
-		case '3': cmd.cmdID = Decrease;
+		case '3': vofaCommandData.cmdID = Decrease;
 			break;
-		default: cmd.cmdID = INVALID;
+		default: vofaCommandData.cmdID = INVALID;
 			break;
 	}
-	memcpy(cmd.validData, pRxPacket + 4, 4);
+	memcpy(vofaCommandData.validData, pRxPacket + 4, 4);
 
-	cmd.floatData = uint8_tArray2float(cmd.validData, 1);
+	vofaCommandData.floatData = uint8Array2Float(vofaCommandData.validData, 0);
 
 	pRxPacket = NULL;
-	memset(cmd.validData, 0, 4);
-	memset(cmd.uartRxPacket, 0, CMD_FRAME_SIZE);
+	memset(vofaCommandData.validData, 0, 4);
+	memset(vofaCommandData.uartRxPacket, 0, CMD_FRAME_SIZE);
 }

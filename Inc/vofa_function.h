@@ -71,6 +71,9 @@ void vofaJustFloatInit(void);
 void uartCMDRecv(uint8_t byte_data);
 void vofaCommandParse(void);
 
+extern vofaJustFloatFrame JustFloat_Data;
+extern vofaCommand vofaCommandData;
+
 #ifdef __cplusplus
 }
 #endif
