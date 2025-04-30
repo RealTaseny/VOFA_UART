@@ -2,7 +2,7 @@
 
 主要是用于无线串口调参，使用`vofa`软件的`Justfloat`协议以及命令帧解析，可自定义响应帧。
 
-![image-vofa](https://github.com/RealTaseny/VOFA_UART/blob/main/images/vofa.png)
+![image-vofa](./images/vofa.png)
 
 
 
@@ -346,18 +346,18 @@ void vofaCommandParse(void)
 
 ### 5.1 新建命令
 
-![vofa-new_cmd](https://github.com/RealTaseny/VOFA_UART/blob/main/images/vofa_new_cmd.png)
+![vofa-new_cmd](./images/vofa_new_cmd.png)
 
 ### 5.2 根据你的命令帧编辑命令
 
-![vofa-edit-cmd](https://github.com/RealTaseny/VOFA_UART/blob/main/images/vofa_edit_cmd.png)
+![vofa-edit-cmd](./images/vofa_edit_cmd.png)
 
 注意编辑完成后一定要切换为HEX模式保存
 
-![vofa-save-with-hex](https://github.com/RealTaseny/VOFA_UART/blob/main/images/vofa_save_with_hex.png)
+![vofa-save-with-hex](./images/vofa_save_with_hex.png)
 
 ### 5.3 将命令绑定到控件
 
 在控件上右键单击，选择`绑定命令`，选择我们刚刚保存的命令即可完成绑定
 
-![vofa_bond_cmd](https://github.com/RealTaseny/VOFA_UART/blob/main/images/vofa_bond_cmd.png)
+![vofa_bond_cmd](./images/vofa_bond_cmd.png)
