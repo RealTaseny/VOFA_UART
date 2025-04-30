@@ -7,6 +7,54 @@
 vofaJustFloatFrame JustFloat_Data;
 vofaCommand        vofaCommandData;
 
+/**
+* @param vofaJFFframe: 包含数据帧的结构体
+* @return void
+*/
+void vofaSendJustFloat(vofaJustFloatFrame *vofaJFFrame)
+{
+	uint8_t i;
+	uint8_t u8Array[4];
+	for (i = 0; i < CH_COUNT; i++)
+	{
+		float2uint8Array(u8Array, vofaJFFrame->fdata[i], 0);
+		uartSendData(vofaJFFrame->u8Array, sizeof(u8Array));
+	}
+	uartSendData(vofaJFFrame->frametail, FRAME_TAIL_SIZE);
+}
+
+/**
+* @param fdata: 指向要发送的浮点数据的指针
+* @param ulSize： 要发送的数据个数
+* @return void
+*/
+void vofaSendFirewater(const float *fdata, const uint32_t ulSize)
+{
+	uint32_t i;
+	for (i = 0; i < ulSize - 1; i++)
+	{
+		printf("%.6f,", *(fdata + i));
+	}
+	printf("%.6f\n", *(fdata + i));
+}
+
+/**
+* @param pData: 指向要发送的单字节数据的指针
+* @param ulSize： 要发送的数据个数
+* @return void
+*/
+void vofaSendRawdata(uint8_t *pData, const uint32_t ulSize)
+{
+	uint32_t i;
+	for (i = 0; i < ulSize; i++)
+	{
+		uartSendByte(*(Data + i));
+	}
+}
+
+/**
+* @brief 初始化JustFloat帧结构体
+*/
 void vofaJustFloatInit(void)
 {
 	vofaCommandData.cmdID                   = INVALID;
@@ -18,28 +66,10 @@ void vofaJustFloatInit(void)
 	JustFloat_Data.frametail[3] = 0x7f;
 }
 
-void vofaSendJustFloat(float* chData)
-{
-	uint8_t u8Array[4];
-	float2uint8Array(u8Array, chData, 0);
-	uartSendData(u8Array, sizeof(u8Array));
-}
-
-void vofaSendJustFloatFrameTail(uint8_t* Array)
-{
-	uartSendData(Array, FRAME_TAIL_SIZE);
-}
-
-void vofaSendFirewater(float fdata)
-{
-	printf("%.6f\n", fdata);
-}
-
-void vofaSendRawdata(uint8_t Data)
-{
-	uartSendByte(Data);
-}
-
+/**
+* @brief 将串口收到的数据判断并存入数据包中，并比对帧控制接收完成标志位置位
+* @param byte_data： 串口接收到的字节数据 
+*/
 void uartCMDRecv(uint8_t byte_data) //此函数放在串口中断中
 {
 	vofaCommandData.uartRxPacket[vofaRxBufferIndex] = byte_data;
@@ -63,7 +93,9 @@ void uartCMDRecv(uint8_t byte_data) //此函数放在串口中断中
 	}
 }
 
-//@S/P1/2/3=%%!#
+/**
+* @brief vofa命令帧解析
+*/
 void vofaCommandParse(void)
 {
 	uint8_t* pRxPacket;

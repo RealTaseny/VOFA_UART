@@ -62,17 +62,16 @@ typedef struct vofaCommand
 extern "C" {
 #endif
 
-void vofaSendJustFloat(float* CH_data);
-void vofaSendFirewater(float fdata);
-void vofaSendRawdata(uint8_t Data);
-void vofaSendJustFloatFrameTail(uint8_t* Array);
+void vofaSendJustFloat(vofaJustFloatFrame *vofaJFFrame);			//以JustFloat协议发送数据
+void vofaSendFirewater(const float *fdata, const uint32_t ulSize);	//以Firewater协议发送数据
+void vofaSendRawdata(uint8_t *pData, const uint32_t ulSize);		//以rawdata协议发送数据
 
-void vofaJustFloatInit(void);
-void uartCMDRecv(uint8_t byte_data);
-void vofaCommandParse(void);
+void vofaJustFloatInit(void);										//Justfloat协议初始化
+void uartCMDRecv(uint8_t byte_data);								//uart串口接收单字节并存入vofaCommandData数据包
+void vofaCommandParse(void);										//解析命令
 
-extern vofaJustFloatFrame JustFloat_Data;
-extern vofaCommand vofaCommandData;
+extern vofaJustFloatFrame JustFloat_Data;							//包含接收到的浮点数据的结构体
+extern vofaCommand vofaCommandData;									//包含命令的结构体
 
 #ifdef __cplusplus
 }
