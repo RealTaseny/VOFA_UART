@@ -216,50 +216,50 @@ void main(void){
     *	一些初始化代码
     */
     for(;;){
-		if (vofaCommandData.completionFlag == 1)	//受到命令帧
-        {
-            vofaCommandData.completionFlag = 0; 	//清楚标志位
-            vofaCommandParse();						//解析收到的数据帧
-            /*
-            * 根据你的命令做相应处理
-            * vofaCommandData.cmdID是接收到的命令ID
-            * vofaCommandData.cmdType是接收到的命令类型
-            * vofaCommandData.floatData是接收到的浮点数据
-            */
+		if (vofaCommandData.completionFlag == 1)		//收到命令帧
+        	{	
+            		vofaCommandData.completionFlag = 0; 			//清楚标志位
+            		vofaCommandParse();						//解析收到的数据帧
+            		/*
+            		* 根据你的命令做相应处理
+            		* vofaCommandData.cmdID是接收到的命令ID
+            		* vofaCommandData.cmdType是接收到的命令类型
+            		* vofaCommandData.floatData是接收到的浮点数据
+            		*/
             
-            //使用举例
-            switch(vofaCommandData.cmdType) 		//判断收到的命令类型
-            {
-                case Speed:
-                    switch(vofaCommandData.cmdID)	//判断收到的命令ID
-                    {
-                        case Direct_Assignment:
-                            printf("I recv Command Type Speed, ID Direct_Assignment, data: %.6f", vofaCommandData.floatData);
-                            break;
-                        case Increse:
-                            printf("I recv Command Type Speed, ID Increse, data: %.6f", vofaCommandData.floatData);
-                            break;
-                        case Decrease:
-                            printf("I recv Command Type Speed, ID Decrease, data: %.6f", vofaCommandData.floatData);
-                            break;
-                    }
-                    break;
-                case Postion:
-                    switch(vofaCommandData.cmdID)	//判断收到的命令ID
-                    {
-                        case Direct_Assignment:
-                            printf("I recv Command Type Postion, ID Direct_Assignment, data: %.6f", vofaCommandData.floatData);
-                            break;
-                        case Increse:
-                            printf("I recv Command Type Postion, ID Increse, data: %.6f", vofaCommandData.floatData);
-                            break;
-                        case Decrease:
-                            printf("I recv Command Type Postion, ID Decrease, data: %.6f", vofaCommandData.floatData);
-                            break;
-                    }
-                    break;
-            }
-        }
+            		//使用举例
+            		switch(vofaCommandData.cmdType) 		//判断收到的命令类型
+            		{
+                		case Speed:
+                    			switch(vofaCommandData.cmdID)	//判断收到的命令ID
+                    			{
+                        			case Direct_Assignment:
+                            			printf("I recv Command Type Speed, ID Direct_Assignment, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                        			case Increse:
+                            			printf("I recv Command Type Speed, ID Increse, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                        			case Decrease:
+                            			printf("I recv Command Type Speed, ID Decrease, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                    			}
+                    		break;
+                		case Postion:
+                    			switch(vofaCommandData.cmdID)	//判断收到的命令ID
+                    			{
+                        			case Direct_Assignment:
+                            			printf("I recv Command Type Postion, ID Direct_Assignment, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                        			case Increse:
+                            			printf("I recv Command Type Postion, ID Increse, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                        			case Decrease:
+                            			printf("I recv Command Type Postion, ID Decrease, data: %.6f", vofaCommandData.floatData);
+                            			break;
+                    			}
+                    		break;
+            		}
+        	}
         osDelay(50);		//延时50ms
 	}
 }
