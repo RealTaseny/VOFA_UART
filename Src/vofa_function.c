@@ -11,14 +11,14 @@ vofaCommand        vofaCommandData;
 * @param vofaJFFframe: 包含数据帧的结构体
 * @return void
 */
-void vofaSendJustFloat(vofaJustFloatFrame *vofaJFFrame)
+void vofaSendJustFloat(vofaJustFloatFrame* vofaJFFrame)
 {
 	uint8_t i;
 	uint8_t u8Array[4];
 	for (i = 0; i < CH_COUNT; i++)
 	{
-		float2uint8Array(u8Array, vofaJFFrame->fdata[i], 0);
-		uartSendData(vofaJFFrame->u8Array, sizeof(u8Array));
+		float2uint8Array(u8Array, &vofaJFFrame->fdata[i]);
+		uartSendData(u8Array, sizeof(u8Array));
 	}
 	uartSendData(vofaJFFrame->frametail, FRAME_TAIL_SIZE);
 }
@@ -28,7 +28,7 @@ void vofaSendJustFloat(vofaJustFloatFrame *vofaJFFrame)
 * @param ulSize： 要发送的数据个数
 * @return void
 */
-void vofaSendFirewater(const float *fdata, const uint32_t ulSize)
+void vofaSendFirewater(const float* fdata, const uint32_t ulSize)
 {
 	uint32_t i;
 	for (i = 0; i < ulSize - 1; i++)
@@ -43,12 +43,12 @@ void vofaSendFirewater(const float *fdata, const uint32_t ulSize)
 * @param ulSize： 要发送的数据个数
 * @return void
 */
-void vofaSendRawdata(uint8_t *pData, const uint32_t ulSize)
+void vofaSendRawdata(uint8_t* pData, const uint32_t ulSize)
 {
 	uint32_t i;
 	for (i = 0; i < ulSize; i++)
 	{
-		uartSendByte(*(Data + i));
+		uartSendByte(*(pData + i));
 	}
 }
 
@@ -57,13 +57,13 @@ void vofaSendRawdata(uint8_t *pData, const uint32_t ulSize)
 */
 void vofaJustFloatInit(void)
 {
-	vofaCommandData.cmdID                   = INVALID;
-	vofaCommandData.cmdType                 = INVALID;
-	vofaCommandData.completionFlag          = 0;
-	JustFloat_Data.frametail[0] = 0x00;
-	JustFloat_Data.frametail[1] = 0x00;
-	JustFloat_Data.frametail[2] = 0x80;
-	JustFloat_Data.frametail[3] = 0x7f;
+	vofaCommandData.cmdID          = INVALID;
+	vofaCommandData.cmdType        = INVALID;
+	vofaCommandData.completionFlag = 0;
+	JustFloat_Data.frametail[0]    = 0x00;
+	JustFloat_Data.frametail[1]    = 0x00;
+	JustFloat_Data.frametail[2]    = 0x80;
+	JustFloat_Data.frametail[3]    = 0x7f;
 }
 
 /**
@@ -74,16 +74,17 @@ void uartCMDRecv(uint8_t byte_data) //此函数放在串口中断中
 {
 	vofaCommandData.uartRxPacket[vofaRxBufferIndex] = byte_data;
 
-	if (vofaCommandData.uartRxPacket[vofaRxBufferIndex - 1] == '!' && vofaCommandData.uartRxPacket[vofaRxBufferIndex] == '#')
+	if (vofaCommandData.uartRxPacket[vofaRxBufferIndex - 1] == '!' && vofaCommandData.uartRxPacket[vofaRxBufferIndex] ==
+		'#')
 	{
 		vofaCommandData.completionFlag = 1;
-		vofaRxBufferIndex  = 0;
+		vofaRxBufferIndex              = 0;
 	}
 
 	else if (vofaRxBufferIndex > (CMD_FRAME_SIZE - 1))
 	{
 		vofaCommandData.completionFlag = 0;
-		vofaRxBufferIndex  = 0;
+		vofaRxBufferIndex              = 0;
 		memset(vofaCommandData.uartRxPacket, 0, 10);
 	}
 
@@ -101,7 +102,8 @@ void vofaCommandParse(void)
 	uint8_t* pRxPacket;
 	pRxPacket = vofaCommandData.uartRxPacket;
 
-	if (vofaCommandData.uartRxPacket[0] != '@' || vofaCommandData.uartRxPacket[3] != '=' || vofaCommandData.uartRxPacket[CMD_FRAME_SIZE - 2] != '!' || vofaCommandData.
+	if (vofaCommandData.uartRxPacket[0] != '@' || vofaCommandData.uartRxPacket[3] != '=' || vofaCommandData.uartRxPacket
+		[CMD_FRAME_SIZE - 2] != '!' || vofaCommandData.
 		uartRxPacket[CMD_FRAME_SIZE - 1] != '#')
 	{
 		memset(vofaCommandData.uartRxPacket, 0, CMD_FRAME_SIZE);
@@ -131,7 +133,7 @@ void vofaCommandParse(void)
 	}
 	memcpy(vofaCommandData.validData, pRxPacket + 4, 4);
 
-	vofaCommandData.floatData = uint8Array2Float(vofaCommandData.validData, 0);
+	vofaCommandData.floatData = uint8Array2Float(vofaCommandData.validData);
 
 	pRxPacket = NULL;
 	memset(vofaCommandData.validData, 0, 4);

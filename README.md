@@ -1,6 +1,16 @@
 # 使用方法
 
-主要是用于无线串口调参，使用`vofa`软件的`Justfloat`协议以及命令帧解析，可自定义响应帧。
+> 写在前面: 作者是将两年前的代码修补了一下并开源出来，如果有问题可以issue，移植教程还是比较详细，仔细阅读下列教程基本上没什么问题。
+
+---
+
+[TOC]
+
+---
+
+
+
+本仓库主要是用于串口调参的工具，使用`vofa`软件的`Justfloat`协议以及命令帧解析，可自定义响应帧。
 
 ![image-vofa](./images/vofa.png)
 
@@ -342,7 +352,42 @@ void vofaCommandParse(void)
 
 ```
 
-## 五、VOFA命令的配置
+## 五、数据大小端的切换
+
+`JustFloat`处理浮点数是按照IEEE的标准，使用四个字节来标识float类型数据，那么这时候就存在一个问题，就是需要清楚数据在你的RAM或ROM中存储的方式是[大端存储(Big Endian)]()还是[小端存储(Little Endian)]()，以便转换函数按照正确的格式转换你的数据。
+
+```C
+//使用小端(Little-endian)的架构：
+//最常用x86架构(包括x86_64)，还有 6502 (including 65802, 65C816), ARM Cortex, Z80 (including Z180, eZ80 etc.), MCS-48, 8051, DEC Alpha, Altera Nios, Atmel AVR, SuperH, VAX, 和 PDP-11 等等；
+
+//使用大端(Big-endian)的架构：
+// Motorola 6800 and 68k, Xilinx Microblaze, IBM POWER, system/360, System/370 等等。
+
+//支持配置endian的架构：
+//如下架构有配置endian为大端、小端中任一种的功能， ARM, PowerPC, Alpha, SPARC V9, MIPS, PA-RISC 和 IA-64 等等。
+```
+
+需要在 `base_tranfer.h`中通过宏定义进行配置:
+
+```C
+#ifndef BASE_TRANSFER_H__
+#define BASE_TRANSFER_H__
+
+#define USE_BIG_ENDIAN		0		//启用大端存储格式
+#define USE_LITTLE_ENDIAN	1		//启用小端存储格式
+
+#include <stdint.h>
+#include <string.h>
+
+float uint8Array2Float(const uint8_t* u8Array);
+void float2uint8Array(uint8_t* u8Array, const float* fdata);
+
+#endif
+```
+
+样例代码由于是在`STM32`上测试的，是`ARM Cortex`架构，故将`#define USE_LITTLE_ENDIAN`配置为了`1`，以启用小端存储格式解析。
+
+## 六、VOFA命令的配置
 
 ### 5.1 新建命令
 

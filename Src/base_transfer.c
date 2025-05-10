@@ -10,44 +10,40 @@
 //如下架构有配置endian为大端、小端中任一种的功能， ARM, PowerPC, Alpha, SPARC V9, MIPS, PA-RISC 和 IA-64 等等。
 
 
-float uint8Array2Float(const uint8_t* u8Array, const uint8_t Flip)
+float uint8Array2Float(const uint8_t* u8Array)
 {
 	float   fdata = 0;
 	uint8_t Data[4];
-	if (Flip)
-	{
+#if USE_BIG_ENDIAN == 1
 		Data[3] = u8Array[0];
 		Data[2] = u8Array[1];
 		Data[1] = u8Array[2];
 		Data[0] = u8Array[3];
-	}
-	else
-	{
+#endif
+#if USE_LITTLE_ENDIAN == 1
 		Data[0] = u8Array[0];
 		Data[1] = u8Array[1];
 		Data[2] = u8Array[2];
 		Data[3] = u8Array[3];
-	}
+#endif
 	memcpy(&fdata, Data, 4);
 	return fdata;
 }
 
-void float2uint8Array(uint8_t* u8Array, const float* fdata, const uint8_t Flip)
+void float2uint8Array(uint8_t* u8Array, const float* fdata)
 {
 	uint8_t floatArray[4];
 	*(float*)floatArray = *fdata;
-	if (Flip)
-	{
+#if USE_BIG_ENDIAN == 1
 		u8Array[3] = floatArray[0];
 		u8Array[2] = floatArray[1];
 		u8Array[1] = floatArray[2];
 		u8Array[0] = floatArray[3];
-	}
-	else
-	{
+#endif
+#if USE_LITTLE_ENDIAN == 1
 		u8Array[0] = floatArray[0];
 		u8Array[1] = floatArray[1];
 		u8Array[2] = floatArray[2];
 		u8Array[3] = floatArray[3];
-	}
+#endif
 }
